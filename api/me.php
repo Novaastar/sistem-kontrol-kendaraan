@@ -1,0 +1,1 @@
+<?php require_once '_helpers.php';$u=auth_user();json_out(['success'=>true,'user'=>$u]);

@@ -1,0 +1,15 @@
+<?php
+require_once '../config/koneksi.php';require_once '../config/auth.php';require_admin();
+$kendaraan=mysqli_query($conn,"SELECT * FROM kendaraan WHERE status='aktif' AND id NOT IN (SELECT kendaraan_id FROM penugasan WHERE status != 'selesai') ORDER BY merk");$drivers=mysqli_query($conn,"SELECT d.*, u.username as nip FROM drivers d LEFT JOIN users u ON d.user_id=u.id WHERE d.status='aktif' AND d.id NOT IN (SELECT driver_id FROM penugasan WHERE status != 'selesai') ORDER BY d.nama");$error='';
+if($_SERVER['REQUEST_METHOD']==='POST'){$tanggal=$_POST['tanggal'];$kid=(int)$_POST['kendaraan_id'];$did=(int)$_POST['driver_id'];$tujuan=trim($_POST['tujuan']);
+  $cek_k = mysqli_query($conn, "SELECT id FROM penugasan WHERE kendaraan_id=$kid AND status != 'selesai'");
+  $cek_d = mysqli_query($conn, "SELECT id FROM penugasan WHERE driver_id=$did AND status != 'selesai'");
+  if(mysqli_num_rows($cek_k) > 0) { $error = 'Kendaraan tersebut masih dipakai dan belum selesai.'; }
+  elseif(mysqli_num_rows($cek_d) > 0) { $error = 'Driver tersebut masih dalam penugasan aktif.'; }
+  else {
+    $stmt=mysqli_prepare($conn,"INSERT INTO penugasan(tanggal,kendaraan_id,driver_id,tujuan) VALUES(?,?,?,?)");mysqli_stmt_bind_param($stmt,'siis',$tanggal,$kid,$did,$tujuan);
+    if(mysqli_stmt_execute($stmt)){$pid=mysqli_insert_id($conn);$s=mysqli_prepare($conn,"INSERT INTO perjalanan(penugasan_id) VALUES(?)");mysqli_stmt_bind_param($s,'i',$pid);mysqli_stmt_execute($s);header('Location:index.php');exit;}else$error='Gagal membuat penugasan.';
+  }
+}
+$page_title='Penugasan Baru';require '../partials/header.php';?>
+<div class="main-wrap"><?php require '../partials/sidebar.php';?><main class="content"><?php require '../partials/navbar.php';?><div class="card card-stat"><div class="card-body"><h4>Penugasan Kendaraan</h4><?php if($error):?><div class="alert alert-danger"><?=e($error)?></div><?php endif;?><form method="post"><div class="row g-3"><div class="col-md-4"><label class="form-label">Tanggal</label><input class="form-control" type="date" name="tanggal" value="<?=date('Y-m-d')?>" required></div><div class="col-md-4"><label class="form-label">Kendaraan</label><select class="form-select" name="kendaraan_id" required><option value="">Pilih kendaraan</option><?php while($r=mysqli_fetch_assoc($kendaraan)):?><option value="<?=$r['id']?>"><?=e($r['merk'].' - '.$r['nomor_polisi'])?></option><?php endwhile;?></select></div><div class="col-md-4"><label class="form-label">Driver</label><select class="form-select" name="driver_id" required><option value="">Pilih driver</option><?php while($r=mysqli_fetch_assoc($drivers)):?><option value="<?=$r['id']?>"><?=e($r['nama'])?><?= $r['nip'] ? ' (NIP: ' . e($r['nip']) . ')' : '' ?></option><?php endwhile;?></select></div><div class="col-md-8"><label class="form-label">Tujuan</label><input class="form-control" name="tujuan" placeholder="Contoh: Surabaya / kantor cabang / operasional"></div></div><div class="mt-4"><button class="btn btn-bj">Simpan Penugasan</button> <a class="btn btn-secondary" href="index.php">Batal</a></div></form></div></div></main></div><?php require '../partials/footer.php';?>

@@ -1,0 +1,1 @@
+<?php require_once '_helpers.php';$h=$_SERVER['HTTP_AUTHORIZATION']??'';if(preg_match('/Bearer\s+(.+)/i',$h,$m)){ $hash=hash('sha256',trim($m[1]));$stmt=mysqli_prepare($conn,"DELETE FROM api_tokens WHERE token_hash=?");mysqli_stmt_bind_param($stmt,'s',$hash);mysqli_stmt_execute($stmt);}json_out(['success'=>true]);

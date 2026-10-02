@@ -1,0 +1,5 @@
+package com.example.bank_jatim_driver
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
