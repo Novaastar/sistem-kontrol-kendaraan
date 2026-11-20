@@ -3,6 +3,10 @@
     <testsuites>
         <testsuite name="phpunit">
             <file>tests/api/UpdatePerjalananIntegrationTest.php</file>
+            <file>tests/api/TripUpdateServiceTest.php</file>
+        </testsuite>
+        <testsuite name="unit">
+            <file>tests/api/TripUpdateServiceTest.php</file>
         </testsuite>
         <testsuite name="pest">
             <file>tests/api/UpdatePerjalananPestTest.php</file>

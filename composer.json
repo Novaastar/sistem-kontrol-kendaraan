@@ -10,6 +10,7 @@
   },
   "scripts": {
     "test:phpunit": "phpunit --testsuite phpunit",
+    "test:unit": "phpunit --testsuite unit",
     "test:pest": "pest tests/api/UpdatePerjalananPestTest.php",
     "test": [
       "@test:phpunit",

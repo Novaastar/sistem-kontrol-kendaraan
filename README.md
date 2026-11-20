@@ -35,6 +35,7 @@ Versi ini adalah MVP operasional. Untuk deployment instansi, tambahkan HTTPS, ba
 
 ## Pengujian PHP
 - PHPUnit dan Pest menjalankan skenario integrasi yang sama untuk satu fitur pencatatan/pembaruan perjalanan driver (`POST /api/update_perjalanan.php`). Instal dependensi dengan `composer install`.
+- Unit test `TripUpdateService` menggunakan Test Double Stub dan Spy untuk mengganti repository database; jalankan terpisah dengan `composer test:unit`.
 - Tes integrasi memerlukan server PHP dan MySQL **terisolasi**, bukan database aplikasi. Gunakan port MySQL selain `3306`, inisialisasi database dari `database.sql`, dan gunakan data directory yang namanya mengandung `skk-whitebox-mysql`.
 - Jalankan server PHP dengan `mysqli.default_port` diarahkan ke port MySQL pengujian. Set `SKK_TEST_DB_PORT` dan `SKK_TEST_API_URL`, lalu jalankan `composer test` untuk keduanya, atau `composer test:phpunit` / `composer test:pest` secara terpisah.
 - Tes membuat fixture unik dan menghapusnya setelah setiap kasus. Jangan arahkan pengujian ke database produksi atau database aplikasi aktif.
