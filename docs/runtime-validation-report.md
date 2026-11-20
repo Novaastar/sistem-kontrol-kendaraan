@@ -7,10 +7,10 @@
 
 | Test tier | Framework | Status | Exit code | Results |
 |---|---|---|---:|---|
-| Unit | PHPUnit 12.5.33 | PASS | 0 | 3 tests, 6 assertions; service tested with Stub and Spy repositories. |
+| Unit | PHPUnit 12.5.33 | PASS | 0 | 7 tests, 14 assertions; service tested with Stub and Spy repositories. |
 | Integration | PHPUnit 12.5.33 | PASS | 0 | 8 tests, 25 assertions; real HTTP endpoint and isolated MySQL. |
 | Integration | Pest 4.7.8 | PASS | 0 | 8 tests, 25 assertions; same endpoint scenarios and isolated MySQL. |
-| PHPUnit combined suite | PHPUnit 12.5.33 | PASS | 0 | 11 tests, 31 assertions. |
+| PHPUnit combined suite | PHPUnit 12.5.33 | PASS | 0 | 15 tests, 39 assertions. |
 
 Pest is built on PHPUnit, so the Pest comparison describes test syntax/API rather than an independent test engine.
 
@@ -38,6 +38,11 @@ The real endpoint is still exercised by integration tests because unit doubles c
 
 ```powershell
 composer test:unit
+# Requires Xdebug enabled for CLI with coverage mode.
+composer test:unit:coverage
+# One-off alternative when loading the matching Windows DLL directly:
+$env:XDEBUG_MODE='coverage'
+php -d zend_extension="C:\path\php_xdebug.dll" vendor\bin\phpunit --testsuite unit --path-coverage --colors=never --coverage-text=docs\coverage-report\phpunit-unit.txt
 $env:SKK_TEST_DB_PORT='3317'
 $env:SKK_TEST_API_URL='http://127.0.0.1:8083/api/update_perjalanan.php'
 composer test:phpunit
@@ -53,4 +58,4 @@ Environment: PHP 8.4.14, PHPUnit 12.5.33, Pest 4.7.8, PHP built-in server, and i
 
 ## Pre-Lab coverage boundary
 
-Statement Coverage (42/42) and Branch Coverage (21/21 executable outcomes) in the White-Box document are manual source/test-trace calculations, not instrumented coverage output. They document the endpoint source as it was analyzed for the Pre-Lab, before the Lab Session refactor extracted its service and repository seam. They should not be read as runtime coverage percentages for the refactored PHP files. The optional automatic coverage report described by the template is not attached because this PHP runtime has neither Xdebug nor PCOV available; the manual Statement and Branch tables remain the Pre-Lab evidence.
+Statement Coverage (42/42) and Branch Coverage (21/21 executable outcomes) in the Pre-Lab section are manual source/test-trace calculations for the endpoint before the Lab Session refactor. The attached PHPUnit coverage report is separate: Xdebug 3.5.3 was loaded for the PHPUnit process, and the report is filtered to the unit-tested `api/TripUpdateService.php` only. It reports 100.00% lines (35/35), 96.97% branches (32/33), 0.76% paths (9/1179), and 66.67% methods (2/3). The HTTP integration tests run in a separate PHP server process and are not included in this unit coverage report. The generated `--coverage-text` output is attached at `docs/coverage-report/phpunit-unit.txt` and rendered at the end of the White-Box document.
