@@ -11,6 +11,7 @@
   "scripts": {
     "test:phpunit": "phpunit --testsuite phpunit",
     "test:unit": "phpunit --testsuite unit",
+    "test:unit:coverage": "phpunit --testsuite unit --path-coverage --colors=never --coverage-text=docs/coverage-report/phpunit-unit.txt",
     "test:pest": "pest tests/api/UpdatePerjalananPestTest.php",
     "test": [
       "@test:phpunit",

@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="vendor/autoload.php" colors="true" cacheDirectory=".phpunit.cache">
+    <source>
+        <include>
+            <file>api/TripUpdateService.php</file>
+        </include>
+    </source>
     <testsuites>
         <testsuite name="phpunit">
             <file>tests/api/UpdatePerjalananIntegrationTest.php</file>
