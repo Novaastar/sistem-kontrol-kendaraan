@@ -33,6 +33,12 @@ Admin membuat kendaraan + driver -> admin membuat penugasan -> driver login Andr
 ## Catatan
 Versi ini adalah MVP operasional. Untuk deployment instansi, tambahkan HTTPS, backup database, audit log, pembatasan akses jaringan, dan kebijakan keamanan akun.
 
+## Pengujian PHP
+- PHPUnit dan Pest menjalankan skenario integrasi yang sama untuk satu fitur pencatatan/pembaruan perjalanan driver (`POST /api/update_perjalanan.php`). Instal dependensi dengan `composer install`.
+- Tes integrasi memerlukan server PHP dan MySQL **terisolasi**, bukan database aplikasi. Gunakan port MySQL selain `3306`, inisialisasi database dari `database.sql`, dan gunakan data directory yang namanya mengandung `skk-whitebox-mysql`.
+- Jalankan server PHP dengan `mysqli.default_port` diarahkan ke port MySQL pengujian. Set `SKK_TEST_DB_PORT` dan `SKK_TEST_API_URL`, lalu jalankan `composer test` untuk keduanya, atau `composer test:phpunit` / `composer test:pest` secara terpisah.
+- Tes membuat fixture unik dan menghapusnya setelah setiap kasus. Jangan arahkan pengujian ke database produksi atau database aplikasi aktif.
+
 ## Penting untuk koneksi Android
 - Emulator Android Studio: `10.0.2.2` mengarah ke localhost PC.
 - HP fisik: ganti `apiBase` di `flutter_driver/lib/main.dart` dengan IP LAN PC, misalnya `http://192.168.1.10/sistem_kontrol_kendaraan_bank_jatim/api`.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true" cacheDirectory=".phpunit.cache">
+    <testsuites>
+        <testsuite name="phpunit">
+            <file>tests/api/UpdatePerjalananIntegrationTest.php</file>
+        </testsuite>
+        <testsuite name="pest">
+            <file>tests/api/UpdatePerjalananPestTest.php</file>
+        </testsuite>
+    </testsuites>
+</phpunit>
