@@ -1,40 +1,56 @@
-# Runtime Validation Report
+# White-Box Testing Lab Evidence
 
 **Generated:** 2026-11-20  
-**Target:** the single driver trip-update feature at `POST /api/update_perjalanan.php`
+**Selected feature:** driver trip updates through `POST /api/update_perjalanan.php`
 
-## Summary
+## Result summary
 
-| Framework | Status | Exit code | Results |
-|---|---|---:|---|
-| PHPUnit 12.5.33 | PASS | 0 | 8 tests, 25 assertions, 0 failures. |
-| Pest 4.7.8 | PASS | 0 | 8 tests, 25 assertions, 0 failures. |
+| Test tier | Framework | Status | Exit code | Results |
+|---|---|---|---:|---|
+| Unit | PHPUnit 12.5.33 | PASS | 0 | 3 tests, 6 assertions; service tested with Stub and Spy repositories. |
+| Integration | PHPUnit 12.5.33 | PASS | 0 | 8 tests, 25 assertions; real HTTP endpoint and isolated MySQL. |
+| Integration | Pest 4.7.8 | PASS | 0 | 8 tests, 25 assertions; same endpoint scenarios and isolated MySQL. |
+| PHPUnit combined suite | PHPUnit 12.5.33 | PASS | 0 | 11 tests, 31 assertions. |
 
-**Overall:** PASS for the selected feature's integration-test scope under both test syntaxes.
+Pest is built on PHPUnit, so the Pest comparison describes test syntax/API rather than an independent test engine.
 
-## Test evidence
+## Why both unit and integration tests are used
 
-- PHPUnit test source: `tests/api/UpdatePerjalananIntegrationTest.php`
-- Pest test source: `tests/api/UpdatePerjalananPestTest.php`
-- Shared isolated fixtures and HTTP/database helpers: `tests/api/TripUpdateTestContext.php`
-- Suite configuration: `phpunit.xml`
-- Command:
-  ```powershell
-  $env:SKK_TEST_DB_PORT='3317'
-  $env:SKK_TEST_API_URL='http://127.0.0.1:8083/api/update_perjalanan.php'
-  composer test
-  ```
-- Result: PHPUnit `OK (8 tests, 25 assertions)`; Pest `8 passed (25 assertions)`; process exit code 0.
-- Environment: PHP 8.4.14, PHPUnit 12.5.33, Pest 4.7.8, PHP built-in server, and isolated MySQL 8.0.30 initialized from `database.sql`.
-- Unique test fixtures are deleted after each test. Both suites call the real endpoint over HTTP and verify persisted values in MySQL.
+The original endpoint combines HTTP request handling, authentication through shared global helpers, a global `mysqli` connection, database writes, and `json_out()` termination. Testing that endpoint as an isolated unit would require bootstrapping those global/process-level dependencies. For the Lab Session, the feature rules were extracted to `api/TripUpdateService.php` behind the `TripUpdateRepository` interface. This makes the business behavior unit-testable without HTTP or a database. The PHPUnit unit tests replace that repository with a Stub or Spy.
 
-## Framework comparison scope
+The real endpoint is still exercised by integration tests because unit doubles cannot verify bearer-token handling, HTTP status/JSON behavior, SQL compatibility, or persistence. Integration fixtures use an isolated MySQL data directory on port 3317, unique rows, and cleanup after each test; they do not use the application database on port 3306.
 
-Both frameworks execute the same eight scenarios for this one feature: missing/invalid token, assignment ownership, trip start, lower odometer rejection, empty update, trip finish with equal odometer, and partial note update. Pest is built on PHPUnit, so this is a comparison of the two test APIs/syntaxes, not two independent test engines.
+## Test-double implementation
 
-## Scope and gaps
+| Type | Implementation | Why selected |
+|---|---|---|
+| Stub | `TripUpdateRepositoryStub` in `tests/api/TripUpdateServiceTest.php` | Returns a predetermined owned-trip row (or no row) so the unit test can verify odometer rejection and not-found behavior without database access. Its write methods fail if a rejected request attempts persistence. |
+| Spy | `TripUpdateRepositorySpy` in `tests/api/TripUpdateServiceTest.php` | Records repository calls and arguments so the unit test can verify the exact trip fields persisted and the `berjalan` status transition for trip start. |
 
-- The tests are integration tests using real HTTP and isolated MySQL. They do not use test doubles and do not claim unit-test coverage.
-- PHPUnit/Pest coverage instrumentation was not enabled, so the Statement and Branch Coverage percentages in the Word document are manual source/test-trace calculations, not generated coverage reports.
-- Docker was unavailable. The local MySQL server was isolated from the application's default database port.
-- No production application code was changed for the test run.
+## Test files and commands
+
+- Unit tests: `tests/api/TripUpdateServiceTest.php`
+- PHPUnit integration tests: `tests/api/UpdatePerjalananIntegrationTest.php`
+- Pest integration tests: `tests/api/UpdatePerjalananPestTest.php`
+- Shared isolated fixtures: `tests/api/TripUpdateTestContext.php`
+- Production service and repository adapter: `api/TripUpdateService.php`, `api/MysqliTripUpdateRepository.php`
+- Test configuration: `phpunit.xml`
+
+```powershell
+composer test:unit
+$env:SKK_TEST_DB_PORT='3317'
+$env:SKK_TEST_API_URL='http://127.0.0.1:8083/api/update_perjalanan.php'
+composer test:phpunit
+composer test:pest
+```
+
+Environment: PHP 8.4.14, PHPUnit 12.5.33, Pest 4.7.8, PHP built-in server, and isolated MySQL 8.0.30 initialized from `database.sql`.
+
+## GitHub evidence
+
+- Testing branch: `https://github.com/Novaastar/sistem-kontrol-kendaraan/tree/testing`
+- Dedicated unit-test implementation commit: `https://github.com/Novaastar/sistem-kontrol-kendaraan/commit/cc07274376967263151bfdd345f4588e7feb1de8`
+
+## Pre-Lab coverage boundary
+
+Statement Coverage (42/42) and Branch Coverage (21/21 executable outcomes) in the White-Box document are manual source/test-trace calculations, not instrumented coverage output. They document the endpoint source as it was analyzed for the Pre-Lab, before the Lab Session refactor extracted its service and repository seam. They should not be read as runtime coverage percentages for the refactored PHP files.
