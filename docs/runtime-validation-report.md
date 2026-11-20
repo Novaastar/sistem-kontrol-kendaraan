@@ -53,4 +53,4 @@ Environment: PHP 8.4.14, PHPUnit 12.5.33, Pest 4.7.8, PHP built-in server, and i
 
 ## Pre-Lab coverage boundary
 
-Statement Coverage (42/42) and Branch Coverage (21/21 executable outcomes) in the White-Box document are manual source/test-trace calculations, not instrumented coverage output. They document the endpoint source as it was analyzed for the Pre-Lab, before the Lab Session refactor extracted its service and repository seam. They should not be read as runtime coverage percentages for the refactored PHP files.
+Statement Coverage (42/42) and Branch Coverage (21/21 executable outcomes) in the White-Box document are manual source/test-trace calculations, not instrumented coverage output. They document the endpoint source as it was analyzed for the Pre-Lab, before the Lab Session refactor extracted its service and repository seam. They should not be read as runtime coverage percentages for the refactored PHP files. The optional automatic coverage report described by the template is not attached because this PHP runtime has neither Xdebug nor PCOV available; the manual Statement and Branch tables remain the Pre-Lab evidence.
